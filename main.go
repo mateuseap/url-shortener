@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -52,7 +53,13 @@ func shortenURL(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
+			"error": "Invalid request format",
+		})
+	}
+
+	if req.URL == "" {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"error": "URL is required",
 		})
 	}
 
@@ -80,12 +87,15 @@ func redirectURL(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Redirect(longURL)
+	return c.Redirect(longURL, fiber.StatusPermanentRedirect)
 }
 
 func main() {
 	api := fiber.New()
 
+	api.Use(swagger.New(swagger.Config{
+		FilePath: "./docs/swagger.json",
+	}))
 	api.Use(logger.New(logger.Config{
 		Format: "${time} [${ip}] ${status} - ${latency} ${method} ${path}\n",
 	}))

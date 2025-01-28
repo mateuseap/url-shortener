@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.0",
+  "title": "URL Shortener API",
+  "info": {
+    "title": "URL Shortener API",
+    "description": "Create and manage shortened URLs.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://url-shortener-k9wx.onrender.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/hello-world": {
+      "get": {
+        "tags": ["Test"],
+        "summary": "Test endpoint",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Hello World"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shorten-url": {
+      "post": {
+        "tags": ["URLs"],
+        "summary": "Create a short URL",
+        "description": "This endpoint takes a long URL and creates a shortened URL.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "URL to shorten",
+                    "example": "https://www.mateuseap.blog/ruby-block-params/"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "short_url": {
+                      "type": "string",
+                      "example": "https://url-shortener-k9wx.onrender.com/Ab4Cd9Ef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid request format"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "URL is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "URL is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{shortURL}": {
+      "get": {
+        "tags": ["URLs"],
+        "summary": "Access shortened URL",
+        "description": "⚠️ This endpoint performs a browser redirect. To use it, copy the short URL and paste it in your browser. Testing through this interface will not work.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shortURL",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Short URL code",
+            "example": "Ab4Cd9Ef"
+          }
+        ],
+        "responses": {
+          "301": {
+            "description": "Redirects to the long URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Short URL not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Short URL not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "URLs",
+      "description": "URL operations"
+    },
+    {
+      "name": "Test",
+      "description": "Test endpoints"
+    }
+  ]
+}
