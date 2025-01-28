@@ -10,7 +10,9 @@ A fast and efficient URL Shortener API that lets you shorten long URLs and easil
 
 ## Swagger documentation
 
-You can interact with the API through the [Swagger UI](https://url-shortener-k9wx.onrender.com/docs).
+You can interact with the API through the [Swagger UI](https://url-shortener-k9wx.onrender.com/docs):
+
+![image](https://github.com/user-attachments/assets/1de13c6a-3fbf-4342-bd6e-0c1fdf1a613d)
 
 ## Mermaid diagram
 
