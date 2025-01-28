@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"os"
 	"sync"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -43,7 +45,7 @@ func shortenURL(c fiber.Ctx) error {
 	mu.Unlock()
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"short_url": "http://localhost:8080/" + shortURL,
+		"short_url": os.Getenv("API_URL") + shortURL,
 	})
 }
 
@@ -64,6 +66,10 @@ func redirectURL(c fiber.Ctx) error {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		panic("Error loading .env file")
+	}
+
 	api := fiber.New()
 
 	api.Use(logger.New(logger.Config{
