@@ -27,6 +27,20 @@ func generateShortURL(longURL string) string {
 	return base64.URLEncoding.EncodeToString(hash[:])[:8]
 }
 
+func apiBaseURL(c fiber.Ctx) string {
+	protocol := "http"
+	if c.Protocol() == "https" {
+		protocol = "https"
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	return protocol + "://" + c.Hostname() + ":" + port + "/"
+}
+
 func shortenURL(c fiber.Ctx) error {
 	var req struct {
 		URL string `json:"url"`
@@ -45,7 +59,7 @@ func shortenURL(c fiber.Ctx) error {
 	mu.Unlock()
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"short_url": os.Getenv("API_URL") + shortURL,
+		"short_url": apiBaseURL(c) + shortURL,
 	})
 }
 
@@ -80,5 +94,10 @@ func main() {
 	api.Post("/shorten-url", shortenURL)
 	api.Get("/:shortURL", redirectURL)
 
-	api.Listen(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	api.Listen(":" + port)
 }
