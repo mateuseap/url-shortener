@@ -37,7 +37,12 @@ func apiBaseURL(c fiber.Ctx) string {
 		port = "8080"
 	}
 
-	return protocol + "://" + c.Hostname() + ":" + port + "/"
+	hostname := c.Hostname()
+	if hostname == "localhost" {
+		return protocol + "://" + hostname + ":" + port + "/"
+	}
+
+	return protocol + "://" + hostname + "/"
 }
 
 func shortenURL(c fiber.Ctx) error {
