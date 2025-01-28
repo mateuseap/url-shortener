@@ -6,8 +6,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/middleware/logger"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 	mu    sync.Mutex
 )
 
-func helloWorld(c fiber.Ctx) error {
+func helloWorld(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Hello World",
 	})
@@ -26,7 +26,7 @@ func generateShortURL(longURL string) string {
 	return base64.URLEncoding.EncodeToString(hash[:])[:8]
 }
 
-func apiBaseURL(c fiber.Ctx) string {
+func apiBaseURL(c *fiber.Ctx) string {
 	protocol := "http"
 	if c.Protocol() == "https" {
 		protocol = "https"
@@ -45,12 +45,12 @@ func apiBaseURL(c fiber.Ctx) string {
 	return protocol + "://" + hostname + "/"
 }
 
-func shortenURL(c fiber.Ctx) error {
+func shortenURL(c *fiber.Ctx) error {
 	var req struct {
 		URL string `json:"url"`
 	}
 
-	if err := c.Bind().Body(&req); err != nil {
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
@@ -67,7 +67,7 @@ func shortenURL(c fiber.Ctx) error {
 	})
 }
 
-func redirectURL(c fiber.Ctx) error {
+func redirectURL(c *fiber.Ctx) error {
 	shortCode := c.Params("shortURL")
 
 	mu.Lock()
@@ -80,7 +80,7 @@ func redirectURL(c fiber.Ctx) error {
 		})
 	}
 
-	return c.Redirect().Status(fiber.StatusFound).To(longURL)
+	return c.Redirect(longURL)
 }
 
 func main() {
