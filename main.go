@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -80,10 +79,6 @@ func redirectURL(c fiber.Ctx) error {
 }
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
-	}
-
 	api := fiber.New()
 
 	api.Use(logger.New(logger.Config{
